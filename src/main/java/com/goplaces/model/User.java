@@ -23,7 +23,7 @@ import lombok.Setter;
 public class User extends BaseModel {
 
 	@Column
-	@Email
+	@Email(message = "not valid email")
 	@NotNull
 	@Getter(value = AccessLevel.PUBLIC)
 	@Setter(value = AccessLevel.PUBLIC)
