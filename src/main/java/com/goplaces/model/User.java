@@ -9,6 +9,7 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -24,10 +25,14 @@ public class User extends BaseModel {
 
 	@Column
 	@Email
+	@NotNull
 	private String email;
 
 	@Column
 	private String profileImagePath;
+
+	@Column
+	private String userDescription;
 
 	@ManyToMany
 	@JoinTable(name = "user_following_mapping", joinColumns = @JoinColumn(name = "user_id", referencedColumnName = "id"), inverseJoinColumns = @JoinColumn(name = "followers_id", referencedColumnName = "id"))
