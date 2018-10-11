@@ -1,5 +1,7 @@
 package com.goplaces.exception;
 
+import java.io.IOException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -14,7 +16,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(UserException.class)
-	public final ResponseEntity<Advice> handleUserNotFoundException(UserException ex) {
+	public final ResponseEntity<Advice> handleUserNotFoundException(Exception ex) {
 
 		Advice apiException = new Advice(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value(),
 				ex.getClass().getSimpleName(), ex);
@@ -31,4 +33,12 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		return new ResponseEntity<Advice>(apiException, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
 
+	@ExceptionHandler(IOException.class)
+	public final ResponseEntity<Advice> ioException(Exception ex) {
+
+		Advice apiException = new Advice(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value(),
+				ex.getClass().getSimpleName(), ex);
+
+		return new ResponseEntity<Advice>(apiException, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
 }

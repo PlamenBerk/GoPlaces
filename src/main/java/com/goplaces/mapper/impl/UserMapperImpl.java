@@ -2,7 +2,7 @@ package com.goplaces.mapper.impl;
 
 import org.springframework.stereotype.Component;
 
-import com.goplaces.dto.CreateUserDTO;
+import com.goplaces.dto.UserDTO;
 import com.goplaces.mapper.IUserMapper;
 import com.goplaces.model.User;
 
@@ -10,7 +10,7 @@ import com.goplaces.model.User;
 public class UserMapperImpl implements IUserMapper {
 
 	@Override
-	public User userDTOtoUser(CreateUserDTO userDTO) {
+	public User userDTOtoUser(UserDTO userDTO) {
 		if (userDTO == null) {
 			return null;
 		}

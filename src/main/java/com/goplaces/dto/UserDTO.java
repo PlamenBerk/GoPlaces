@@ -6,8 +6,9 @@ import lombok.Setter;
 
 @Getter(value = AccessLevel.PUBLIC)
 @Setter(value = AccessLevel.PUBLIC)
-public class CreateUserDTO {
+public class UserDTO {
 	private String email;
 	private String profileImagePath;
+	private String profileImageBase64;
 	private String userDescription;
 }
