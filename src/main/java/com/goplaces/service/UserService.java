@@ -28,7 +28,7 @@ import com.goplaces.repository.IUserRepository;
 
 @Service
 @Transactional
-public class UserService extends BaseService {
+public class UserService {
 
 	@Autowired
 	private IUserMapper userMapper;
@@ -54,13 +54,11 @@ public class UserService extends BaseService {
 			throw new UserException("cannot create user");
 		}
 
-		getEm().persist(user);
-
-		return user;
+		return userRepository.save(user);
 	}
 
 	public User updateUser(UserDTO userDTO, Integer id) throws UserException, IOException {
-		User managedUser = getEm().find(User.class, id);
+		User managedUser = userRepository.findById(id).get();
 
 		setUserProfileImage(userDTO, managedUser);
 
@@ -70,16 +68,16 @@ public class UserService extends BaseService {
 
 		managedUser.setUserDescription(userDTO.getUserDescription());
 		managedUser.setProfileImagePath(userDTO.getProfileImagePath());
+
 		return managedUser;
 	}
 
 	public User updateFollowing(FollowerDTO followerDTO) throws UserException, NoResultException {
-		User currentUser = getEm().find(User.class, followerDTO.getCurrentUserId());
+		User currentUser = userRepository.findById(followerDTO.getCurrentUserId()).get();
 		User followedUser = null;
 
 		try {
-			followedUser = getEm().createNamedQuery("findByEmail", User.class)
-					.setParameter("pEmail", followerDTO.getRequestedEmailForFollow()).getSingleResult();
+			followedUser = userRepository.findUserByEmail(followerDTO.getRequestedEmailForFollow());
 		} catch (Exception e) {
 			throw new UserException("Cannot find user with email " + followerDTO.getRequestedEmailForFollow());
 		}

@@ -22,7 +22,7 @@ import lombok.Setter;
 })
 public class User extends BaseModel {
 
-	@Column
+	@Column(unique = true)
 	@Email(message = "not valid email")
 	@NotNull
 	@Getter(value = AccessLevel.PUBLIC)

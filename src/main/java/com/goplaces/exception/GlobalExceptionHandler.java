@@ -6,6 +6,7 @@ import java.util.Set;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -20,7 +21,7 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 
 	@ExceptionHandler(UserException.class)
-	public final ResponseEntity<Advice> handleUserNotFoundException(Exception ex) {
+	public final ResponseEntity<Advice> handleUserNotFoundException(UserException ex) {
 
 		Advice apiException = new Advice(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value(),
 				ex.getMessage(), ex);
@@ -38,7 +39,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	}
 
 	@ExceptionHandler(IOException.class)
-	public final ResponseEntity<Advice> ioException(Exception ex) {
+	public final ResponseEntity<Advice> ioException(IOException ex) {
 
 		Advice apiException = new Advice(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value(),
 				ex.getMessage(), ex);
@@ -53,7 +54,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 		for (ConstraintViolation<?> violation : violations) {
 			message.append(violation.getMessage().concat(";"));
 		}
-		System.err.println(message.toString());
+		Advice apiException = new Advice(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value(),
+				message.toString(), ex);
+
+		return new ResponseEntity<Advice>(apiException, HttpStatus.INTERNAL_SERVER_ERROR);
+	}
+
+	@ExceptionHandler(DataIntegrityViolationException.class)
+	public final ResponseEntity<Advice> dataIntegrityViolationException(DataIntegrityViolationException ex) {
+		String message = "Cannot execute operation";
+
 		Advice apiException = new Advice(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value(),
 				message.toString(), ex);
 
