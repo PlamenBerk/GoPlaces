@@ -27,30 +27,26 @@ public class PlaceController {
 	@Autowired
 	private PlaceService placeService;
 
-	@RequestMapping(value = "/place", method = RequestMethod.GET)
-	public ResponseEntity<?> listAllPlacesPage(@RequestParam(value = "search", required = false) String search,
-			@RequestParam("page") int page, @RequestParam("size") int size) throws Exception {
-		return new ResponseEntity<List<Place>>(placeService.findAllPlacesPage(page, size), HttpStatus.OK);
-	}
-
 	@RequestMapping(value = "/place", method = RequestMethod.POST)
 	public ResponseEntity<?> addNewPlace(@RequestBody PlaceDTO placeDTO) throws Exception {
 		return new ResponseEntity<Place>(placeService.registerPlace(placeDTO), HttpStatus.OK);
 	}
 
-	@RequestMapping(value = "/place/filter", method = RequestMethod.GET)
+	@RequestMapping(value = "/place", method = RequestMethod.GET)
 	@ResponseBody
-	public ResponseEntity<?> findAll(@RequestParam(value = "search", required = false) String search) {
+	public ResponseEntity<?> findAll(@RequestParam("page") int page, @RequestParam("size") int size,
+			@RequestParam(value = "search", required = false) String search) throws Exception {
+
 		List<SearchCriteria> params = new ArrayList<SearchCriteria>();
 		if (search != null) {
-			Pattern pattern = Pattern.compile("(\\w+?)(:|<|>)(\\w+?),");
+			Pattern pattern = Pattern.compile("(\\w+?)(:|<|>|::)(\\w+?),");
 			Matcher matcher = pattern.matcher(search + ",");
 			while (matcher.find()) {
 				params.add(new SearchCriteria(matcher.group(1), matcher.group(2), matcher.group(3)));
 			}
 		}
 
-		return new ResponseEntity<List<Place>>(placeService.searchPlace(params), HttpStatus.OK);
+		return new ResponseEntity<List<Place>>(placeService.searchPlace(params, page, size), HttpStatus.OK);
 	}
 
 }
