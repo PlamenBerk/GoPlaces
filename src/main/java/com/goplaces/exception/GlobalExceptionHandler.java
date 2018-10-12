@@ -23,7 +23,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public final ResponseEntity<Advice> handleUserNotFoundException(Exception ex) {
 
 		Advice apiException = new Advice(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value(),
-				ex.getClass().getSimpleName(), ex);
+				ex.getMessage(), ex);
 
 		return new ResponseEntity<Advice>(apiException, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
@@ -32,7 +32,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public final ResponseEntity<Advice> unexpectedExceptions(Exception ex) {
 
 		Advice apiException = new Advice(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value(),
-				ex.getClass().getSimpleName(), ex);
+				ex.getMessage(), ex);
 
 		return new ResponseEntity<Advice>(apiException, HttpStatus.INTERNAL_SERVER_ERROR);
 	}
@@ -41,7 +41,7 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
 	public final ResponseEntity<Advice> ioException(Exception ex) {
 
 		Advice apiException = new Advice(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.value(),
-				ex.getClass().getSimpleName(), ex);
+				ex.getMessage(), ex);
 
 		return new ResponseEntity<Advice>(apiException, HttpStatus.INTERNAL_SERVER_ERROR);
 	}

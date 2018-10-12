@@ -34,9 +34,10 @@ public class Advice {
 	public Advice(HttpStatus status, int statusCode, String message, Throwable ex) {
 		this();
 		this.status = status;
-		this.system = message;
-		this.message = ex.getLocalizedMessage();
 		this.statusCode = statusCode;
+		this.message = message;
+		this.system = ex.getClass().getSimpleName();
+
 	}
 
 	public HttpStatus getStatus() {
