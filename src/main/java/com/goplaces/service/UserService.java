@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 import java.util.UUID;
 
 import javax.imageio.ImageIO;
@@ -12,6 +13,10 @@ import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.goplaces.dto.FollowerDTO;
@@ -19,6 +24,7 @@ import com.goplaces.dto.UserDTO;
 import com.goplaces.exception.UserException;
 import com.goplaces.mapper.IUserMapper;
 import com.goplaces.model.User;
+import com.goplaces.repository.IUserRepository;
 
 @Service
 @Transactional
@@ -26,6 +32,18 @@ public class UserService extends BaseService {
 
 	@Autowired
 	private IUserMapper userMapper;
+
+	@Autowired
+	private IUserRepository userRepository;
+
+	@Cacheable("users")
+	public List<User> findAllUserPage(int page, int size) throws Exception {
+		Pageable pageableRequest = PageRequest.of(page, size);
+		Page<User> users = userRepository.findAll(pageableRequest);
+		List<User> usersList = users.getContent();
+
+		return usersList;
+	}
 
 	public User registerUser(UserDTO userDTO) throws UserException, IOException {
 		User user = userMapper.userDTOtoUser(userDTO);

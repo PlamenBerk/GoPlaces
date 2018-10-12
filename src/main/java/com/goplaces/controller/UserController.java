@@ -1,5 +1,7 @@
 package com.goplaces.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +9,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.goplaces.dto.FollowerDTO;
@@ -20,6 +23,12 @@ public class UserController {
 
 	@Autowired
 	private UserService userService;
+
+	@RequestMapping(value = "/user", method = RequestMethod.GET)
+	public ResponseEntity<?> listAllUserPaging(@RequestParam("page") int page, @RequestParam("size") int size)
+			throws Exception {
+		return new ResponseEntity<List<User>>(userService.findAllUserPage(page, size), HttpStatus.OK);
+	}
 
 	@RequestMapping(value = "/user", method = RequestMethod.POST)
 	public ResponseEntity<?> addNewUser(@RequestBody UserDTO userDTO) throws Exception {
