@@ -18,7 +18,6 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -75,7 +74,7 @@ public class PlaceService extends BaseService {
 		return placeRepository.save(place);
 	}
 
-	@Cacheable("places")
+	// @Cacheable("places")
 	public List<Place> searchPlace(List<SearchCriteria> params, int page, int size) {
 		Pageable pageableRequest = PageRequest.of(page, size);
 

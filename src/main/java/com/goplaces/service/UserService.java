@@ -38,6 +38,7 @@ public class UserService {
 	@Autowired
 	private IUserRepository userRepository;
 
+	// @Cacheable("userFollowing")
 	public List<UserBackDTOFollow> findAllUserWithFollowingPage(int page, int size) {
 		Pageable pageableRequest = PageRequest.of(page, size);
 		Page<User> users = userRepository.findAll(pageableRequest);
@@ -51,6 +52,7 @@ public class UserService {
 		return userDTOFollow;
 	}
 
+	// @Cacheable("usersPlaces")
 	public List<UserBackDTOPlaces> findAllUserWithPlacesPage(int page, int size) {
 		Pageable pageableRequest = PageRequest.of(page, size);
 		Page<User> users = userRepository.findAll(pageableRequest);
