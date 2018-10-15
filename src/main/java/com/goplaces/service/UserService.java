@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.UUID;
@@ -13,13 +14,14 @@ import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.goplaces.dto.FollowerDTO;
+import com.goplaces.dto.UserBackDTOFollow;
+import com.goplaces.dto.UserBackDTOPlaces;
 import com.goplaces.dto.UserDTO;
 import com.goplaces.exception.UserException;
 import com.goplaces.mapper.IUserMapper;
@@ -36,13 +38,30 @@ public class UserService {
 	@Autowired
 	private IUserRepository userRepository;
 
-	@Cacheable("users")
-	public List<User> findAllUserPage(int page, int size) throws Exception {
+	public List<UserBackDTOFollow> findAllUserWithFollowingPage(int page, int size) {
 		Pageable pageableRequest = PageRequest.of(page, size);
 		Page<User> users = userRepository.findAll(pageableRequest);
 		List<User> usersList = users.getContent();
 
-		return usersList;
+		List<UserBackDTOFollow> userDTOFollow = new ArrayList<>();
+		for (User u : usersList) {
+			userDTOFollow.add(userMapper.userToUserDTOFollow(u));
+		}
+
+		return userDTOFollow;
+	}
+
+	public List<UserBackDTOPlaces> findAllUserWithPlacesPage(int page, int size) {
+		Pageable pageableRequest = PageRequest.of(page, size);
+		Page<User> users = userRepository.findAll(pageableRequest);
+		List<User> usersList = users.getContent();
+
+		List<UserBackDTOPlaces> userDTOPlace = new ArrayList<>();
+		for (User u : usersList) {
+			userDTOPlace.add(userMapper.userToUserDTOPlace(u));
+		}
+
+		return userDTOPlace;
 	}
 
 	public User registerUser(UserDTO userDTO) throws UserException, IOException {
@@ -82,8 +101,16 @@ public class UserService {
 			throw new UserException("Cannot find user with email " + followerDTO.getRequestedEmailForFollow());
 		}
 
+		if (followedUser == null) {
+			throw new UserException("Cannot find user with email " + followerDTO.getRequestedEmailForFollow());
+		}
+
 		if (currentUser == null) {
 			throw new UserException("Problem with current user");
+		}
+
+		if (currentUser.getId() == followedUser.getId()) {
+			throw new UserException("Cannot execute this operation");
 		}
 
 		if (followerDTO.isFollowing()) {

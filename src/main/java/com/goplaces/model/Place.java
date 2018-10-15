@@ -7,6 +7,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -36,5 +38,6 @@ public class Place extends BaseModel {
 	// @JsonIdentityReference(alwaysAsId = true)
 	@ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
 	@JoinColumn(name = "user_id")
+	@JsonBackReference
 	private User user;
 }

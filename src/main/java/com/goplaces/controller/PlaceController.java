@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,9 +28,9 @@ public class PlaceController {
 	@Autowired
 	private PlaceService placeService;
 
-	@RequestMapping(value = "/place", method = RequestMethod.POST)
-	public ResponseEntity<?> addNewPlace(@RequestBody PlaceDTO placeDTO) throws Exception {
-		return new ResponseEntity<Place>(placeService.registerPlace(placeDTO), HttpStatus.OK);
+	@RequestMapping(value = "/place/{id}", method = RequestMethod.POST)
+	public ResponseEntity<?> addNewPlace(@RequestBody PlaceDTO placeDTO, @PathVariable("id") int id) throws Exception {
+		return new ResponseEntity<Place>(placeService.registerPlace(id, placeDTO), HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/place", method = RequestMethod.GET)
@@ -47,6 +48,18 @@ public class PlaceController {
 		}
 
 		return new ResponseEntity<List<Place>>(placeService.searchPlace(params, page, size), HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/place/follows", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<?> getFolloledUsersPlaces(@RequestParam("userId") Integer currenUserId) throws Exception {
+		return new ResponseEntity<List<Place>>(placeService.searchPlacesOnFollowedUsers(currenUserId), HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/place/own", method = RequestMethod.GET)
+	@ResponseBody
+	public ResponseEntity<?> findOwnPlaces(@RequestParam("userId") Integer currenUserId) throws Exception {
+		return new ResponseEntity<List<Place>>(placeService.findOwnPlaces(currenUserId), HttpStatus.OK);
 	}
 
 }

@@ -10,4 +10,5 @@ public interface IUserRepository extends PagingAndSortingRepository<User, Intege
 
 	@Query("SELECT c FROM User c WHERE c.email = :pEmail")
 	public User findUserByEmail(@Param("pEmail") String pEmail);
+
 }

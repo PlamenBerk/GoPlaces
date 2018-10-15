@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.goplaces.dto.FollowerDTO;
+import com.goplaces.dto.UserBackDTOFollow;
+import com.goplaces.dto.UserBackDTOPlaces;
 import com.goplaces.dto.UserDTO;
 import com.goplaces.model.User;
 import com.goplaces.service.UserService;
@@ -24,10 +26,18 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 
-	@RequestMapping(value = "/user", method = RequestMethod.GET)
-	public ResponseEntity<?> listAllUserPaging(@RequestParam("page") int page, @RequestParam("size") int size)
+	@RequestMapping(value = "/user/followings", method = RequestMethod.GET)
+	public ResponseEntity<?> listAllUserWithFollowingsPaging(@RequestParam("page") int page,
+			@RequestParam("size") int size) throws Exception {
+		return new ResponseEntity<List<UserBackDTOFollow>>(userService.findAllUserWithFollowingPage(page, size),
+				HttpStatus.OK);
+	}
+
+	@RequestMapping(value = "/user/places", method = RequestMethod.GET)
+	public ResponseEntity<?> listAllUserWithPlacesPaging(@RequestParam("page") int page, @RequestParam("size") int size)
 			throws Exception {
-		return new ResponseEntity<List<User>>(userService.findAllUserPage(page, size), HttpStatus.OK);
+		return new ResponseEntity<List<UserBackDTOPlaces>>(userService.findAllUserWithPlacesPage(page, size),
+				HttpStatus.OK);
 	}
 
 	@RequestMapping(value = "/user", method = RequestMethod.POST)

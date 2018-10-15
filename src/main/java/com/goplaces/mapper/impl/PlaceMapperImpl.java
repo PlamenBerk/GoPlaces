@@ -18,7 +18,6 @@ public class PlaceMapperImpl implements IPlaceMapper {
 		Place place = new Place();
 		place.setCategory(placeDTO.getCategory());
 		place.setDescription(placeDTO.getDescription());
-		place.setImagePath(placeDTO.getImagePath());
 		place.setLatLng(placeDTO.getLatLng());
 		place.setName(placeDTO.getName());
 
