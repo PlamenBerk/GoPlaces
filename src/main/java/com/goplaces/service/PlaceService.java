@@ -67,7 +67,7 @@ public class PlaceService extends BaseService {
 			place.setImagePath(imagePlaceName);
 		}
 
-		user.setPlaces(place);
+		user.getPlaces().add(place);
 
 		place.setUser(user);
 

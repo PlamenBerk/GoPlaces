@@ -24,23 +24,19 @@ import lombok.Setter;
 @NamedQueries({ // nl
 		@NamedQuery(name = "findByEmail", query = "SELECT c FROM User c WHERE c.email = :pEmail") // nl
 })
+@Getter(value = AccessLevel.PUBLIC)
+@Setter(value = AccessLevel.PUBLIC)
 public class User extends BaseModel {
 
 	@Column(unique = true)
 	@Email(message = "not valid email")
 	@NotNull
-	@Getter(value = AccessLevel.PUBLIC)
-	@Setter(value = AccessLevel.PUBLIC)
 	private String email;
 
 	@Column
-	@Getter(value = AccessLevel.PUBLIC)
-	@Setter(value = AccessLevel.PUBLIC)
 	private String profileImagePath;
 
 	@Column
-	@Getter(value = AccessLevel.PUBLIC)
-	@Setter(value = AccessLevel.PUBLIC)
 	private String userDescription;
 
 	// @JsonIgnore
@@ -50,21 +46,4 @@ public class User extends BaseModel {
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
 	private List<Place> places;
-
-	public Set<User> getFollow() {
-		return follow;
-	}
-
-	public void setFollow(User following) {
-		this.follow.add(following);
-	}
-
-	public List<Place> getPlaces() {
-		return places;
-	}
-
-	public void setPlaces(Place place) {
-		this.places.add(place);
-	}
-
 }

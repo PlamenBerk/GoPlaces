@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+	<property name="LOG_PATH" value="D:/logs" />
+
+	<appender name="STDOUT"
+		class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>
+				%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n
+			</pattern>
+		</encoder>
+	</appender>
+
+	<appender name="PERFORMANCE"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+		<file>${LOG_PATH}/performance.log</file>
+
+		<encoder
+				class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n
+			</Pattern>
+		</encoder>
+		<rollingPolicy
+				class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				${LOG_PATH}/archived/performance_%d{dd-MM-yyyy'T'HH'h'}.%i.tar.gz
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>50MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
+	</appender>
+
+	<appender name="BUSINESS"
+			  class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+		<file>${LOG_PATH}/business.log</file>
+
+		<encoder
+				class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n
+			</Pattern>
+		</encoder>
+		<rollingPolicy
+				class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				${LOG_PATH}/archived/business_%d{dd-MM-yyyy'T'HH'h'}.%i.tar.gz
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>50MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
+	</appender>
+
+	<appender name="WEBSERVICE"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+		<file>${LOG_PATH}/webservice.log</file>
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n
+			</Pattern>
+		</encoder>
+
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				${LOG_PATH}/archived/webservice_%d{dd-MM-yyyy'T'HH'h'}.%i.tar.gz
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>50MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+	</appender>
+
+	<appender name="TECHNICAL"
+		class="ch.qos.logback.core.rolling.RollingFileAppender">
+
+		<file>${LOG_PATH}/technical.log</file>
+
+		<encoder
+			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<Pattern>
+				%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36}.%M - %msg%n
+			</Pattern>
+		</encoder>
+		<rollingPolicy
+			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>
+				${LOG_PATH}/archived/technical_%d{dd-MM-yyyy'T'HH'h'}.%i.tar.gz
+			</fileNamePattern>
+			<timeBasedFileNamingAndTriggeringPolicy
+				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
+				<maxFileSize>50MB</maxFileSize>
+			</timeBasedFileNamingAndTriggeringPolicy>
+		</rollingPolicy>
+
+	</appender>
+
+	<root level="info">
+		<appender-ref ref="STDOUT" />
+	</root>
+
+	<springProfile name="dev">
+		<logger name="webservice" additivity="true" level="trace">
+			<appender-ref ref="WEBSERVICE" />
+		</logger>
+		<logger name="business" additivity="true" level="info">
+			<appender-ref ref="BUSINESS" />
+		</logger>
+		<logger name="performance" additivity="true" level="info">
+			<appender-ref ref="PERFORMANCE" />
+		</logger>
+		<logger name="technical" additivity="true" level="info">
+			<appender-ref ref="TECHNICAL" />
+		</logger>
+		<logger name="org.hibernate.type" additivity="true"
+			level="error">
+			<appender-ref ref="TECHNICAL" />
+		</logger>
+		<logger name="org.hibernate" additivity="true" level="error">
+			<appender-ref ref="TECHNICAL" />
+		</logger>
+		<logger name="org.hibernate.SQL" additivity="true"
+			level="debug">
+			<appender-ref ref="TECHNICAL" />
+		</logger>
+	</springProfile>
+
+	<springProfile name="prod">
+		<logger name="webservice" additivity="false" level="trace">
+			<appender-ref ref="WEBSERVICE" />
+		</logger>
+		<logger name="business" additivity="false" level="error">
+			<appender-ref ref="BUSINESS" />
+		</logger>
+		<logger name="performance" additivity="false" level="info">
+			<appender-ref ref="PERFORMANCE" />
+		</logger>
+		<logger name="technical" additivity="false" level="error">
+			<appender-ref ref="TECHNICAL" />
+		</logger>
+		<logger name="org.hibernate.type" additivity="false"
+			level="error">
+			<appender-ref ref="TECHNICAL" />
+		</logger>
+		<logger name="org.hibernate" additivity="false" level="error">
+			<appender-ref ref="TECHNICAL" />
+		</logger>
+		<logger name="org.hibernate.SQL" additivity="false"
+			level="debug">
+			<appender-ref ref="TECHNICAL" />
+		</logger>
+	</springProfile>
+
+</configuration>

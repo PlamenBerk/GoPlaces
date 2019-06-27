@@ -4,6 +4,7 @@ import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -13,7 +14,10 @@ import javax.imageio.ImageIO;
 import javax.persistence.NoResultException;
 import javax.transaction.Transactional;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -37,6 +41,32 @@ public class UserService {
 
 	@Autowired
 	private IUserRepository userRepository;
+
+	private final Logger businessLogger = LoggerFactory
+			.getLogger("business." + MethodHandles.lookup().lookupClass().getCanonicalName());
+
+	private final Logger technicalLogger = LoggerFactory
+			.getLogger("technical." + MethodHandles.lookup().lookupClass().getCanonicalName());
+
+	@Cacheable("users")
+	public List<User> findAllUserPage(int page, int size) throws Exception {
+		List<User> usersList = null;
+
+		try {
+			businessLogger.info("Finding users for page: " + page + " and size: " + size);
+
+			Pageable pageableRequest = PageRequest.of(page, size);
+			Page<User> users = userRepository.findAll(pageableRequest);
+			usersList = users.getContent();
+
+			businessLogger.info("Found users for page: " + page + " and size: " + size + " :: " + usersList);
+		} catch (Exception e) {
+			technicalLogger.error(e.getMessage(), e);
+			throw new UserException(e.getMessage());
+		}
+
+		return usersList;
+	}
 
 	// @Cacheable("userFollowing")
 	public List<UserBackDTOFollow> findAllUserWithFollowingPage(int page, int size) {
@@ -69,62 +99,70 @@ public class UserService {
 	public User registerUser(UserDTO userDTO) throws UserException, IOException {
 		User user = userMapper.userDTOtoUser(userDTO);
 
-		setUserProfileImage(userDTO, user);
-
 		if (user == null) {
 			throw new UserException("cannot create user");
 		}
 
-		return userRepository.save(user);
+		setUserProfileImage(userDTO, user);
+		User u = null;
+		try {
+			u = userRepository.save(user);
+			businessLogger.info("Registering user: " + u);
+		} catch (Exception e) {
+			technicalLogger.error(e.getMessage(), e);
+			throw new UserException(e.getMessage());
+		}
+		return u;
 	}
 
 	public User updateUser(UserDTO userDTO, Integer id) throws UserException, IOException {
-		User managedUser = userRepository.findById(id).get();
+		User managedUser = null;
+		try {
+			managedUser = userRepository.findById(id).get();
+			if (managedUser == null || userDTO == null) {
+				throw new UserException("cannot update user");
+			}
+			setUserProfileImage(userDTO, managedUser);
+			managedUser.setUserDescription(userDTO.getUserDescription());
+			managedUser.setProfileImagePath(userDTO.getProfileImagePath());
 
-		setUserProfileImage(userDTO, managedUser);
-
-		if (managedUser == null || userDTO == null) {
-			throw new UserException("cannot update user");
+			businessLogger.info("Updating user: " + managedUser);
+		} catch (Exception e) {
+			technicalLogger.error(e.getMessage(), e);
+			throw new UserException(e.getMessage());
 		}
-
-		managedUser.setUserDescription(userDTO.getUserDescription());
-		managedUser.setProfileImagePath(userDTO.getProfileImagePath());
-
 		return managedUser;
 	}
 
 	public User updateFollowing(FollowerDTO followerDTO) throws UserException, NoResultException {
-		User currentUser = userRepository.findById(followerDTO.getCurrentUserId()).get();
+		User currentUser = null;
+		try {
+			currentUser = userRepository.findById(followerDTO.getCurrentUserId()).get();
+		} catch (Exception e) {
+			technicalLogger.error(e.getMessage(), e);
+			throw new UserException(e.getMessage());
+		}
+
 		User followedUser = null;
 
 		try {
 			followedUser = userRepository.findUserByEmail(followerDTO.getRequestedEmailForFollow());
 		} catch (Exception e) {
+			technicalLogger.error(e.getMessage(), e);
 			throw new UserException("Cannot find user with email " + followerDTO.getRequestedEmailForFollow());
-		}
-
-		if (followedUser == null) {
-			throw new UserException("Cannot find user with email " + followerDTO.getRequestedEmailForFollow());
-		}
-
-		if (currentUser == null) {
-			throw new UserException("Problem with current user");
-		}
-
-		if (currentUser.getId() == followedUser.getId()) {
-			throw new UserException("Cannot execute this operation");
 		}
 
 		if (followerDTO.isFollowing()) {
-			currentUser.setFollow(followedUser);
+			currentUser.getFollow().add(followedUser);
+			businessLogger.info("User: " + currentUser + " following " + followedUser);
 			return currentUser;
 		} else {
 			if (currentUser.getFollow().contains(followedUser)) {
 				currentUser.getFollow().remove(followedUser);
+				businessLogger.info("User: " + currentUser + " unfollowing " + followedUser);
 			}
 			return currentUser;
 		}
-
 	}
 
 	private void setUserProfileImage(UserDTO userDTO, User user) throws IOException {

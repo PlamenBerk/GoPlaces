@@ -11,4 +11,10 @@ public class UserDTO {
 	private String profileImagePath;
 	private String profileImageBase64;
 	private String userDescription;
+
+	@Override
+	public String toString() {
+		return "UserDTO [email=" + email + ", prefileImagePath=" + profileImagePath + ", userDescription="
+				+ userDescription + "]";
+	}
 }
